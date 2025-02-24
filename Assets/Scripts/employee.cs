@@ -1,6 +1,5 @@
 using System;
-
-[Serializable]
+using UnityEngine;
 public class Employee
 {
     public int Id { get; set; }
@@ -35,7 +34,7 @@ public class Employee
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error setting gift: {ex.Message}");
+            Debug.Log($"Error setting gift: {ex.Message}");
             throw;
         }
     }
@@ -47,78 +46,16 @@ public class Employee
             if (this.DeletedAt == null)
             {
                 this.DeletedAt = DateTime.Now;
-                Console.WriteLine($"Employee {this.Name} has been deleted.");
+                Debug.Log($"Employee {this.Name} has been deleted.");
             }
             else
             {
-                Console.WriteLine($"Employee {this.Name} was already deleted.");
+                Debug.Log($"Employee {this.Name} was already deleted.");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting employee: {ex.Message}");
+            Debug.Log($"Error deleting employee: {ex.Message}");
         }
-    }
-}
-
-public class ExcelReader
-{
-    public static List<Employee> ReadEmployeesFromExcel(string filePath)
-    {
-        List<Employee> employees = new List<Employee>();
-
-        using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-        {
-              if (Path.GetExtension(path) == ".xls")
-            {
-                workbook = new HSSFWorkbook(stream); // Excel 97-2003
-            }
-            else
-            {
-                workbook = new XSSFWorkbook(stream); // Excel 2007+
-            }
-
-            ISheet sheet = workbook.GetSheetAt(0); 
-
-            for (int rowIndex = 1; rowIndex <= sheet.LastRowNum; rowIndex++) 
-            {
-                IRow row = sheet.GetRow(rowIndex);
-                if (row == null) continue; // Bỏ qua dòng trống
-
-                try
-                {
-                    Employee emp = new Employee
-                    {
-                        Id = (int)row.GetCell(0).NumericCellValue,
-                        Code = row.GetCell(1).StringCellValue, 
-                        Name = row.GetCell(2).StringCellValue, 
-                        Department = row.GetCell(3).StringCellValue,
-                        Note = row.GetCell(4)?.StringCellValue, 
-                        Gift = row.GetCell(5)?.StringCellValue, 
-                        UpdatedAt = GetDateValue(row.GetCell(6)),
-                        DeletedAt = GetDateValue(row.GetCell(7)) 
-                    };
-
-                    employees.Add(emp);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Lỗi đọc dòng {rowIndex}: {ex.Message}");
-                }
-            }
-        }
-
-        return employees;
-    }
-
-    private static DateTime? GetDateValue(ICell cell)
-    {
-        if (cell == null || cell.CellType == CellType.Blank)
-            return null;
-
-        if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell))
-            return cell.DateCellValue;
-
-        return null;
     }
 }
