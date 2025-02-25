@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using SFB; // StandaloneFileBrowser
+using SFB;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.HSSF.UserModel;
@@ -40,12 +40,12 @@ public class ExcelReader : MonoBehaviour
         using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
         {
             if (Path.GetExtension(path) == ".xls")
-                workbook = new HSSFWorkbook(stream); // Excel 97-2003
+                workbook = new HSSFWorkbook(stream); // Excel 97-2003                                                     
             else
                 workbook = new XSSFWorkbook(stream); // Excel 2007+
 
             ISheet sheet = workbook.GetSheetAt(0); // Lấy sheet đầu tiên
-
+            Debug.Log(sheet);
             List<string> players = new List<string>();
 
             for (int i = 0; i <= sheet.LastRowNum; i++)
