@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using UnityEngine;
 public class Employee
@@ -5,22 +6,22 @@ public class Employee
     public int Id { get; set; }
     public string Code { get; set; }
     public string Name { get; set; }
-    public string Department { get; set; }
+    public string? Department { get; set; }
     public string? Note { get; set; }
     public string? Gift { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
-    public Employee(int id, string code, string name, string department, string? note, string? gift, DateTime? updatedAt, DateTime? deletedAt)
+    public Employee(int id, string code, string name, string? department, string? note, string? gift, DateTime? updatedAt, DateTime? deletedAt)
     {
         this.Id = id;
         this.Code = code;
         this.Name = name;
         this.Department = department;
         this.Note = note;
-        this.Gift = null;
-        this.UpdatedAt = null;
-        this.DeletedAt = null; 
+        this.Gift = gift;
+        this.UpdatedAt = updatedAt;
+        this.DeletedAt = deletedAt; 
     }
 
     public void UpdateGift(string gift)

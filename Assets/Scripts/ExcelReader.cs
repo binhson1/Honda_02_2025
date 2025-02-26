@@ -17,20 +17,14 @@ public class ExcelReader : MonoBehaviour
 
     void Start()
     {
-        string filePath = Application.dataPath + "/ExcelTest/data.xlsx";
+        string filePath = Application.dataPath + "/Data/data.xlsx";
 
         List<Employee> employees = ReadEmployeesFromExcel(filePath);
         List<Gift> gifts = ReadGiftsFromExcel(filePath);
 
-        foreach (var emp in employees)
-        {
-            Debug.Log($"ID: {emp.Id}, Name: {emp.Name}, UpdatedAt: {emp.UpdatedAt}");
-        }
-
-        foreach (var gift in gifts)
-        {
-            Debug.Log($"ID: {gift.Id}, Name: {gift.Name}, Quantity: {gift.Quantity} , Remaining: {gift.Remaining}, UpdatedAt: {gift.UpdatedAt}");
-        }
+        Debug.Log("Count employees: " + employees.Count);
+        Debug.Log("Count gifts: " + gifts.Count); 
+        Debug.Log("Read data from excel successfully");
     }
 
 
@@ -64,7 +58,7 @@ public class ExcelReader : MonoBehaviour
                         (int)row.GetCell(0).NumericCellValue,
                         row.GetCell(1).StringCellValue,
                         row.GetCell(2).StringCellValue,
-                        row.GetCell(3).StringCellValue,
+                        row.GetCell(3)?.StringCellValue,
                         row.GetCell(4)?.StringCellValue,
                         row.GetCell(5)?.StringCellValue,
                         GetDateValue(row.GetCell(6)),
