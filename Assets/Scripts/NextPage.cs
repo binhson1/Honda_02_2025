@@ -34,6 +34,27 @@ public class NextPage : MonoBehaviour
             }
         }
     }
+
+    public void Previous()
+    {
+        for (int i = 0; i < pages.Count; i++)
+        {
+            if (pages[i].activeSelf)
+            {
+                pages[i].SetActive(false);
+                if (i == 0)
+                {
+                    pages[pages.Count - 1].SetActive(true);
+                }
+                else
+                {
+                    pages[i - 1].SetActive(true);
+                }
+                break;
+            }
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
