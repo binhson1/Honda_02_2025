@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class SelectPrize : MonoBehaviour
 {
-    public List<GameObject> prizes;
-    public TMPro.TMP_Dropdown dropdownlistprize;
-    public int prizeIndex;
+    public List<GameObject> batchprizes;
+    public TMPro.TMP_Dropdown dropdownlistprize;    
+    public LoadData loadData;
+    public int currentPrizeIndex;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,26 +15,45 @@ public class SelectPrize : MonoBehaviour
         {
             DropdownValueChanged(dropdownlistprize);
         });
-        for (int i = 0; i < prizes.Count; i++)
+        List<string> prizeNames = new List<string>();
+        for (int i = 0; i < loadData.prizes.Count; i++)
         {
-            if (i == 0)
+            prizeNames.Add(loadData.prizes[i].Name + " : " + loadData.prizes[i].RemainingQuantity);
+        }
+        string batchPrizeName = loadData.prizes[0].BatchSize.ToString();
+        dropdownlistprize.AddOptions(prizeNames);        
+        for(int i = 0; i < batchprizes.Count; i++)
+        {
+            if (batchprizes[i].name == batchPrizeName)
             {
-                prizes[i].SetActive(true);
+                batchprizes[i].SetActive(true);
+                currentPrizeIndex = 0;
             }
             else
             {
-                prizes[i].SetActive(false);
+                batchprizes[i].SetActive(false);
             }
         }
     }
 
     void DropdownValueChanged(TMPro.TMP_Dropdown change)
     {
-        for (int i = 0; i < prizes.Count; i++)
+       // check current dropdown value
+        int prizeIndex = change.value;
+
+        string batchPrizeName = loadData.prizes[prizeIndex].BatchSize.ToString();
+        for (int i = 0; i < batchprizes.Count; i++)
         {
-            prizes[i].SetActive(false);
+            if (batchprizes[i].name == batchPrizeName)
+            {
+                batchprizes[i].SetActive(true);
+                currentPrizeIndex = change.value;
+            }
+            else
+            {
+                batchprizes[i].SetActive(false);
+            }            
         }
-        prizes[change.value].SetActive(true);
     }
 
     // Update is called once per frame
