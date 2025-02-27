@@ -5,6 +5,7 @@ using NPOI.XSSF.UserModel;
 using NPOI.HSSF.UserModel;
 using TMPro;
 using System.Collections;
+using System.Linq;
 
 class RollPrize : MonoBehaviour
 {
@@ -17,11 +18,13 @@ class RollPrize : MonoBehaviour
 
     public List<LoadData.PlayerData> resultList = new List<LoadData.PlayerData>();
     public SelectPrize selectPrize;
+    public TextMeshProUGUI buttonText;
     public TextMeshProUGUI currentPrizeLeft;
-    public float fadeDuration = 10f; // Thời gian fade (giây)
+    public float fadeDuration = 5f; // Thời gian fade (giây)
 
     public List<TextMeshProUGUI> resultTMP = new List<TextMeshProUGUI>();
     private bool isPlaying = false;
+    private bool isStop = false;
     // list of people that won 
     void Start()
     {
@@ -29,54 +32,64 @@ class RollPrize : MonoBehaviour
     }
     public void Roll()
     {
-        if (!isPlaying)
+        if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity == 0)
         {
-            if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity == 0)
-            {
-                return;
-            }
+            return;
+        }
+        if (!isPlaying)
+        {            
             if (playingPlayer.Count == 0)
             {
                 for (int i = 0; i < players.Count; i++)
                 {
                     playingPlayer.Add(new LoadData.PlayerData());
+                    wonPlayer.Add(new LoadData.PlayerData());
                 }
             }
             SavePlayer();
-            List<int> randomList = new List<int>();
-            for (int i = 0; i < players.Count; i++)
+            if(!isStop)
             {
-                if (!playingPlayer[i].isWon)
+                List<int> randomList = new List<int>();
+                for (int i = 0; i < players.Count; i++)
                 {
-                    // check current player is not in won player list
-                    int random = Random.Range(0, loadData.playerDataList.Count);
-                    while (loadData.wonPlayer.Contains(loadData.playerDataList[random]) && randomList.Contains(random))
-                    {
-                        random = Random.Range(0, loadData.playerDataList.Count);
+                    if (!playingPlayer[i].isWon)
+                    {                    
+                        int random = Random.Range(0, loadData.playerDataList.Count);
+                        while (loadData.wonPlayer.Contains(loadData.playerDataList[random]) || randomList.Contains(random))
+                        {
+                            random = Random.Range(0, loadData.playerDataList.Count);
+                        }
+                        players[i].transform.Find("Anim").gameObject.SetActive(true);
+                        StartCoroutine(Fade(players[i].transform.Find("Anim").gameObject, true));
+                        players[i].transform.Find("Text (TMP)").gameObject.SetActive(false);
+                        string note = string.IsNullOrEmpty(loadData.playerDataList[random].note) ? " " : (" - " + loadData.playerDataList[random].note);
+                        players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = loadData.playerDataList[random].manhanvien + " - " + loadData.playerDataList[random].hovaten + " - " + loadData.playerDataList[random].phong + note;
+                        playingPlayer[i] = loadData.playerDataList[random];
+                        playingPlayer[i].isWon = true;
+                        wonPlayer[i] = playingPlayer[i];
+                        randomList.Add(random);
                     }
-                    StartCoroutine(Fade(players[i].transform.Find("Anim").gameObject, true));
-                    string note = string.IsNullOrEmpty(loadData.playerDataList[random].note) ? " " : (" - " + loadData.playerDataList[random].note);
-                    players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = loadData.playerDataList[random].manhanvien + " - " + loadData.playerDataList[random].hovaten + " - " + loadData.playerDataList[random].phong + note;
-                    players[i].transform.Find("Text (TMP)").gameObject.SetActive(false);
-                    playingPlayer[i] = loadData.playerDataList[random];
-                    playingPlayer[i].isWon = true;
-                    wonPlayer.Add(playingPlayer[i]);
-                    randomList.Add(random);
                 }
-            }
+            } 
+            else
+            {
+                isStop = false;
+            }           
             isPlaying = true;
+            buttonText.text = "STOP";
         }
         else
         {
             for (int i = 0; i < players.Count; i++)
             {
-                StartCoroutine(Fade(players[i].transform.Find("Anim").gameObject, false));
+                players[i].transform.Find("Anim").gameObject.SetActive(false);
                 players[i].transform.Find("Text (TMP)").gameObject.SetActive(true);
-                isPlaying = false;
             }
+            isPlaying = false;
+            buttonText.text = "ROLL";
         }
-    }
-
+    }   
+    
     // Gọi để làm hiện dần
     public void StartFadeIn(GameObject target)
     {
@@ -115,35 +128,44 @@ class RollPrize : MonoBehaviour
         color.a = endAlpha;
         sr.color = color;
     }
-
-    public void StopRoll()
-    {
-        for (int i = 0; i < players.Count; i++)
-        {
-            StartFadeOut(players[i].transform.Find("Anim").gameObject);
-        }
-    }
-
-
     public void SavePlayer()
     {
-        // save to excel
-        if (wonPlayer.Count == players.Count)
+        bool allWon = true;
+        List<LoadData.PlayerData> savePlayer = new List<LoadData.PlayerData>();                
+        for (int i = 0; i < players.Count; i++)
         {
-            loadData.SaveExcel(wonPlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
-            // reset all player                    
-            for (int i = 0; i < players.Count; i++)
+            if(playingPlayer[i].isWon)
             {
-                loadData.wonPlayer.Add(wonPlayer[i]);
-                resultList.Add(wonPlayer[i]);
-                players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
-                playingPlayer[i] = new LoadData.PlayerData();
+                if(wonPlayer[i] != null )
+                {
+                    loadData.wonPlayer.Add(wonPlayer[i]);
+                    resultList.Add(wonPlayer[i]);
+                    savePlayer.Add(wonPlayer[i]);
+                    wonPlayer[i] = null;
+                }                                     
             }
-            wonPlayer.Clear();
-            loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= loadData.prizes[selectPrize.currentPrizeIndex].BatchSize;
-            currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
-            loadData.WritePrizeRemainQuantity();
+            else
+            {
+                allWon = false;
+            }
         }
+        loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);            
+        if(allWon)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {                
+                playingPlayer[i].isWon = false;
+                players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
+            }
+            isStop = true;
+        }    
+        if(loadData.prizes[selectPrize.currentPrizeIndex].BatchSize == savePlayer.Count)        
+        {
+            isStop = false;    
+        }      
+        loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
+        currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
+        loadData.WritePrizeRemainQuantity();        
     }
     public void clearText()
     {
@@ -165,27 +187,31 @@ class RollPrize : MonoBehaviour
     }
     public void SelectPlayer()
     {
+        if(playingPlayer == null)        
+        {
+            return;
+        }
         // check current gameobject that provoke this function
         GameObject selectedPlayer = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         // Debug.Log(selectedPlayer);
         // check who is this player in the gameobject list
         for (int i = 0; i < players.Count; i++)
         {
-            if (players[i].name == selectedPlayer.name)
+            if (players[i].name == selectedPlayer.name && wonPlayer[i] != null)
             {
                 // check if this player is already won
                 if (playingPlayer[i].isWon)
                 {
                     // remove from won list
-                    playingPlayer[i].isWon = false;
-                    wonPlayer.Remove(playingPlayer[i]);
+                    playingPlayer[i].isWon = false;                    
+                    wonPlayer[i].isWon = false;
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
                 }
                 else
                 {
                     // add to won list
                     playingPlayer[i].isWon = true;
-                    wonPlayer.Add(playingPlayer[i]);
+                    wonPlayer[i].isWon = true;
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = playingPlayer[i].manhanvien + " - " + playingPlayer[i].hovaten + " - " + playingPlayer[i].phong + " - " + playingPlayer[i].note;
                 }
             }

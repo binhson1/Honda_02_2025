@@ -58,7 +58,10 @@ public class LoadData : MonoBehaviour
     public List<Prize> prizes;
     void Start()
     {
-        dataPath = "D:\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+        // dataPath = "D:\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+        dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+    // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";
+
 
         // selectFileButton.onClick.AddListener(LoadExcel);
         LoadOrCreatePrizes(dataPath);
