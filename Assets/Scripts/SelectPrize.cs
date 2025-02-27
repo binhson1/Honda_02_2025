@@ -17,11 +17,12 @@ public class SelectPrize : MonoBehaviour
         {
             DropdownValueChanged(dropdownlistprize);
         });
-        Load();
+        Invoke("Load", 1f);
     }
 
     public void Load()
     {
+        dropdownlistprize.ClearOptions();
         List<string> prizeNames = new List<string>();
         for (int i = 0; i < loadData.prizes.Count; i++)
         {
