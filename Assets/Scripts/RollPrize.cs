@@ -10,6 +10,8 @@ using System.Linq;
 class RollPrize : MonoBehaviour
 {
     public LoadData loadData;
+    private int currentPage = 0;
+    private const int pageSize = 20;
     public List<GameObject> players;
     // create a list to store player data
     public List<LoadData.PlayerData> playingPlayer = new List<LoadData.PlayerData>();
@@ -22,7 +24,6 @@ class RollPrize : MonoBehaviour
     public TextMeshProUGUI currentPrizeLeft;
     public float fadeDuration = 5f; // Thời gian fade (giây)
 
-    public List<TextMeshProUGUI> resultTMP = new List<TextMeshProUGUI>();
     private bool isPlaying = false;
     private bool isStop = false;
     public List<TextMeshProUGUI> resultTextTMP;
@@ -141,8 +142,8 @@ class RollPrize : MonoBehaviour
                 {
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
-                    string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
-                    resultTextTMP[i].text = wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
+                    string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);                    
+                    resultTextTMP[i].text = "(" + ( i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;                    
                     savePlayer.Add(wonPlayer[i]);
                     wonPlayer[i] = null;
                 }                                                     
@@ -160,6 +161,10 @@ class RollPrize : MonoBehaviour
                 playingPlayer[i].isWon = false;
                 players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
             }
+            if(loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
+            {   
+                ShowMultiResult();
+            }
             isStop = true;
         }    
         if(loadData.prizes[selectPrize.currentPrizeIndex].BatchSize == savePlayer.Count)        
@@ -170,6 +175,45 @@ class RollPrize : MonoBehaviour
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
         loadData.WritePrizeRemainQuantity();        
     }
+
+
+
+public void ShowMultiResult()
+{
+    int startIndex = currentPage * pageSize;
+    int endIndex = Mathf.Min(startIndex + pageSize, resultList.Count);
+    
+    for (int i = 0; i < pageSize; i++)
+    {
+        if (startIndex + i < resultList.Count && resultList[startIndex + i] != null)
+        {
+            string note = string.IsNullOrEmpty(resultList[startIndex + i].note) ? " " : (" - " + resultList[startIndex + i].note);
+            resultTextTMP[i].text = $"({startIndex + i + 1}) - {resultList[startIndex + i].manhanvien} - {resultList[startIndex + i].hovaten} - {resultList[startIndex + i].phong}{note}";
+        }
+        else
+        {
+            resultTextTMP[i].text = ""; // Xóa nội dung nếu không có dữ liệu
+        }
+    }
+}
+
+public void NextPage()
+{
+    if ((currentPage + 1) * pageSize < resultList.Count)
+    {
+        currentPage++;
+        ShowMultiResult();
+    }
+}
+
+public void PreviousPage()
+{
+    if (currentPage > 0)
+    {
+        currentPage--;
+        ShowMultiResult();
+    }
+}
     public void clearText()
     {
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
@@ -224,14 +268,7 @@ class RollPrize : MonoBehaviour
                 }
             }
         }
-    }
-    public void ShowResult()
-    {
-        for (int i = 0; i < resultTMP.Count; i++)
-        {
-            resultTMP[i].text = resultList[i].manhanvien + " " + resultList[i].hovaten;
-        }
-    }
+    }   
     void Update()
     {
 

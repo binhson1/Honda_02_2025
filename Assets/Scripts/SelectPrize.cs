@@ -8,7 +8,7 @@ public class SelectPrize : MonoBehaviour
     public TMPro.TMP_Dropdown dropdownlistprize;
     public LoadData loadData;
     public int currentPrizeIndex;
-
+    public List<GameObject> changePage;
     public List<GameObject> backGround;
     // Start is called before the first frame update
     void Start()
@@ -84,6 +84,15 @@ public class SelectPrize : MonoBehaviour
             {
                 backGround[i].SetActive(false);
             }
+        }
+        bool isVali = false; 
+        if(loadData.prizes[prizeIndex].TotalQuantity == 100)
+        {
+            isVali = true;
+        }
+        for(int i = 0; i < changePage.Count; i++)
+        {
+            changePage[i].SetActive(isVali);
         }
     }
 
