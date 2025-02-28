@@ -33,7 +33,7 @@ class RollPrize : MonoBehaviour
     }
     public void Roll()
     {
-        if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity == 0)
+        if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity <= 0)
         {
             return;
         }
@@ -70,6 +70,7 @@ class RollPrize : MonoBehaviour
                         wonPlayer[i] = playingPlayer[i];
                         randomList.Add(random);
                     }
+                    buttonText.text = "STOP";
                 }
             } 
             else
@@ -77,7 +78,6 @@ class RollPrize : MonoBehaviour
                 isStop = false;
             }           
             isPlaying = true;
-            buttonText.text = "STOP";
         }
         else
         {
@@ -141,10 +141,11 @@ class RollPrize : MonoBehaviour
                 {
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
-                    resultTextTMP[i].text = wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + " - " + wonPlayer[i].note;
+                    string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
+                    resultTextTMP[i].text = wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
                     savePlayer.Add(wonPlayer[i]);
                     wonPlayer[i] = null;
-                }                                     
+                }                                                     
             }
             else
             {
@@ -163,7 +164,7 @@ class RollPrize : MonoBehaviour
         }    
         if(loadData.prizes[selectPrize.currentPrizeIndex].BatchSize == savePlayer.Count)        
         {
-            isStop = false;    
+            // isStop = true;    
         }      
         loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
@@ -190,6 +191,7 @@ class RollPrize : MonoBehaviour
         {
             resultTextTMP[i].text = "";
         }
+        buttonText.text = "ROLL";
     }
     public void SelectPlayer()
     {
