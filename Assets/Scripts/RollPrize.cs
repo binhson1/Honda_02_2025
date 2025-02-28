@@ -25,6 +25,7 @@ class RollPrize : MonoBehaviour
     public List<TextMeshProUGUI> resultTMP = new List<TextMeshProUGUI>();
     private bool isPlaying = false;
     private bool isStop = false;
+    public List<TextMeshProUGUI> resultTextTMP;
     // list of people that won 
     void Start()
     {
@@ -140,6 +141,7 @@ class RollPrize : MonoBehaviour
                 {
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
+                    resultTextTMP[i].text = wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + " - " + wonPlayer[i].note;
                     savePlayer.Add(wonPlayer[i]);
                     wonPlayer[i] = null;
                 }                                     
@@ -183,6 +185,10 @@ class RollPrize : MonoBehaviour
 
             // Gán lại màu sắc đã thay đổi vào SpriteRenderer
             spriteRenderer.color = color;
+        }
+        for (int i = 0; i < resultTextTMP.Count; i++)
+        {
+            resultTextTMP[i].text = "";
         }
     }
     public void SelectPlayer()

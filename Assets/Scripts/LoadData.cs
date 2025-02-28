@@ -39,11 +39,12 @@ public class LoadData : MonoBehaviour
         public int BatchSize; // Số lượng quay mỗi lần
     }
     public List<Prize> Morningprizes = new List<Prize>{
-            new Prize { Name = "Vali", TotalQuantity = 100, RemainingQuantity = 100, BatchSize = 10 },
             new Prize { Name = "Máy Giặt", TotalQuantity = 15, RemainingQuantity = 15, BatchSize = 15 },
-            new Prize { Name = "Tivi", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
             new Prize { Name = "Nồi Chiên", TotalQuantity = 20, RemainingQuantity = 20, BatchSize = 10 },
+            new Prize { Name = "Tivi", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
             new Prize { Name = "Tủ Lạnh", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
+            new Prize { Name = "Vali", TotalQuantity = 100, RemainingQuantity = 100, BatchSize = 10 },
+
     };
     public List<Prize> Afternoonprizes = new List<Prize>{
             new Prize { Name = "Xe Máy Honda Blade", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
@@ -58,11 +59,17 @@ public class LoadData : MonoBehaviour
     public List<Prize> prizes;
     void Start()
     {
+        string folderName = "Data";
+        string baseDirectory = Path.GetDirectoryName(Application.dataPath);
+        string filePath = Path.Combine(baseDirectory, folderName);
+        if (!Directory.Exists(filePath))
+        {
+            Directory.CreateDirectory(filePath);
+        }
+        dataPath = filePath + "/Data.xlsx";    
         // dataPath = "D:\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
-        dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
-    // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";
-
-
+        // dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+        // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";
         // selectFileButton.onClick.AddListener(LoadExcel);
         LoadOrCreatePrizes(dataPath);
         prizes = Morningprizes;
