@@ -54,6 +54,15 @@ public class SelectPrize : MonoBehaviour
                 backGround[i].SetActive(false);
             }
         }
+        bool isVali = false; 
+        if(loadData.prizes[0].TotalQuantity == 100)
+        {
+            isVali = true;
+        }
+        for(int i = 0; i < changePage.Count; i++)
+        {
+            changePage[i].SetActive(isVali);
+        }
     }
     void DropdownValueChanged(TMPro.TMP_Dropdown change)
     {

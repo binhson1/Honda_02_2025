@@ -13,6 +13,10 @@ public class NextPage : MonoBehaviour
         {
             pages[i].SetActive(false);
         }
+        if (Display.displays.Length > 1) // Kiểm tra xem có màn hình thứ 2 không
+        {
+            Display.displays[1].Activate(); // Kích hoạt màn hình thứ 2
+        }
     }
 
     public void Next()

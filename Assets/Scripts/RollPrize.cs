@@ -48,8 +48,7 @@ class RollPrize : MonoBehaviour
                     wonPlayer.Add(new LoadData.PlayerData());
                 }
             }
-            SavePlayer();
-            if(!isStop)
+            if(!isStop)// quay tiếp không dừng lại cho trường hợp buổi sáng.
             {
                 List<int> randomList = new List<int>();
                 for (int i = 0; i < players.Count; i++)
@@ -71,14 +70,15 @@ class RollPrize : MonoBehaviour
                         wonPlayer[i] = playingPlayer[i];
                         randomList.Add(random);
                     }
-                    buttonText.text = "STOP";
+                    buttonText.text = "STOP";                    
                 }
+                isPlaying = true;// là cho cái animations;
+                isStop = true;
             } 
             else
             {
-                isStop = false;
+                SavePlayer();
             }           
-            isPlaying = true;
         }
         else
         {
@@ -88,7 +88,8 @@ class RollPrize : MonoBehaviour
                 players[i].transform.Find("Text (TMP)").gameObject.SetActive(true);
             }
             isPlaying = false;
-            buttonText.text = "ROLL";
+            // buttonText.text = "ROLL";
+            buttonText.text = "SAVE";
         }
     }   
     
@@ -132,6 +133,7 @@ class RollPrize : MonoBehaviour
     }
     public void SavePlayer()
     {
+        buttonText.text = "START";
         bool allWon = true;
         List<LoadData.PlayerData> savePlayer = new List<LoadData.PlayerData>();                
         for (int i = 0; i < players.Count; i++)
@@ -161,16 +163,20 @@ class RollPrize : MonoBehaviour
                 playingPlayer[i].isWon = false;
                 players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
             }
-            if(loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
+        if(loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
             {   
                 ShowMultiResult();
             }
-            isStop = true;
         }    
         if(loadData.prizes[selectPrize.currentPrizeIndex].BatchSize == savePlayer.Count)        
         {
             // isStop = true;    
-        }      
+        }
+        if(loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity != loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity)
+        {
+            // isStop = true;// dừng lúc mà comfirm tất cả đã xong trong quay để chọn hoặc loại
+        }
+        isStop = false;
         loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
         loadData.WritePrizeRemainQuantity();        
@@ -235,7 +241,7 @@ public void PreviousPage()
         {
             resultTextTMP[i].text = "";
         }
-        buttonText.text = "ROLL";
+        buttonText.text = "START";
     }
     public void SelectPlayer()
     {
