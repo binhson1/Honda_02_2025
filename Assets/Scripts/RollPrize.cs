@@ -39,7 +39,7 @@ class RollPrize : MonoBehaviour
             return;
         }
         if (!isPlaying)
-        {            
+        {
             if (playingPlayer.Count == 0)
             {
                 for (int i = 0; i < players.Count; i++)
@@ -48,13 +48,13 @@ class RollPrize : MonoBehaviour
                     wonPlayer.Add(new LoadData.PlayerData());
                 }
             }
-            if(!isStop)// quay tiếp không dừng lại cho trường hợp buổi sáng.
+            if (!isStop)// quay tiếp không dừng lại cho trường hợp buổi sáng.
             {
                 List<int> randomList = new List<int>();
                 for (int i = 0; i < players.Count; i++)
                 {
                     if (!playingPlayer[i].isWon)
-                    {                    
+                    {
                         int random = Random.Range(0, loadData.playerDataList.Count);
                         while (loadData.wonPlayer.Contains(loadData.playerDataList[random]) || randomList.Contains(random))
                         {
@@ -70,15 +70,15 @@ class RollPrize : MonoBehaviour
                         wonPlayer[i] = playingPlayer[i];
                         randomList.Add(random);
                     }
-                    buttonText.text = "STOP";                    
+                    buttonText.text = "STOP";
                 }
                 isPlaying = true;// là cho cái animations;
                 isStop = true;
-            } 
+            }
             else
             {
                 SavePlayer();
-            }           
+            }
         }
         else
         {
@@ -91,8 +91,8 @@ class RollPrize : MonoBehaviour
             // buttonText.text = "ROLL";
             buttonText.text = "SAVE";
         }
-    }   
-    
+    }
+
     // Gọi để làm hiện dần
     public void StartFadeIn(GameObject target)
     {
@@ -135,91 +135,103 @@ class RollPrize : MonoBehaviour
     {
         buttonText.text = "START";
         bool allWon = true;
-        List<LoadData.PlayerData> savePlayer = new List<LoadData.PlayerData>();                
+        List<LoadData.PlayerData> savePlayer = new List<LoadData.PlayerData>();
         for (int i = 0; i < players.Count; i++)
         {
-            if(playingPlayer[i].isWon)
+            if (playingPlayer[i].isWon)
             {
-                if(wonPlayer[i] != null )
+                if (wonPlayer[i] != null)
                 {
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
-                    string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);                    
-                    resultTextTMP[i].text = "(" + ( i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;                    
+                    string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
+                    resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
                     savePlayer.Add(wonPlayer[i]);
                     wonPlayer[i] = null;
-                }                                                     
+                }
             }
             else
             {
                 allWon = false;
             }
         }
-        loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);            
-        if(allWon)
+        loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
+        if (allWon)
         {
             for (int i = 0; i < players.Count; i++)
-            {                
+            {
                 playingPlayer[i].isWon = false;
                 players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
             }
-        if(loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
-            {   
+            if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
+            {
                 ShowMultiResult();
             }
-        }    
-        if(loadData.prizes[selectPrize.currentPrizeIndex].BatchSize == savePlayer.Count)        
+        }
+        if (loadData.prizes[selectPrize.currentPrizeIndex].BatchSize == savePlayer.Count)
         {
             // isStop = true;    
         }
-        if(loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity != loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity)
+        if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity != loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity)
         {
             // isStop = true;// dừng lúc mà comfirm tất cả đã xong trong quay để chọn hoặc loại
         }
         isStop = false;
         loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
-        loadData.WritePrizeRemainQuantity();        
+        loadData.WritePrizeRemainQuantity();
     }
 
 
 
-public void ShowMultiResult()
-{
-    int startIndex = currentPage * pageSize;
-    int endIndex = Mathf.Min(startIndex + pageSize, resultList.Count);
-    
-    for (int i = 0; i < pageSize; i++)
+    public void ShowMultiResult()
     {
-        if (startIndex + i < resultList.Count && resultList[startIndex + i] != null)
+        if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
         {
-            string note = string.IsNullOrEmpty(resultList[startIndex + i].note) ? " " : (" - " + resultList[startIndex + i].note);
-            resultTextTMP[i].text = $"({startIndex + i + 1}) - {resultList[startIndex + i].manhanvien} - {resultList[startIndex + i].hovaten} - {resultList[startIndex + i].phong}{note}";
+            for (int i = 0; i < resultList.Count; i++)
+            {
+                if (resultList[i] != null)
+                {
+                    string note = string.IsNullOrEmpty(resultList[i].note) ? " " : (" - " + resultList[i].note);
+                    resultTextTMP[i].text = $"({i + 1}) - {resultList[i].manhanvien} - {resultList[i].hovaten} - {resultList[i].phong}{note}";
+                }
+            }
+            return;
         }
-        else
+        int startIndex = currentPage * pageSize;
+        int endIndex = Mathf.Min(startIndex + pageSize, resultList.Count);
+
+        for (int i = 0; i < pageSize; i++)
         {
-            resultTextTMP[i].text = ""; // Xóa nội dung nếu không có dữ liệu
+            if (startIndex + i < resultList.Count && resultList[startIndex + i] != null)
+            {
+                string note = string.IsNullOrEmpty(resultList[startIndex + i].note) ? " " : (" - " + resultList[startIndex + i].note);
+                resultTextTMP[i].text = $"({startIndex + i + 1}) - {resultList[startIndex + i].manhanvien} - {resultList[startIndex + i].hovaten} - {resultList[startIndex + i].phong}{note}";
+            }
+            else
+            {
+                resultTextTMP[i].text = ""; // Xóa nội dung nếu không có dữ liệu
+            }
         }
     }
-}
 
-public void NextPage()
-{
-    if ((currentPage + 1) * pageSize < resultList.Count)
+    public void NextPage()
     {
-        currentPage++;
-        ShowMultiResult();
+        if ((currentPage + 1) * pageSize < resultList.Count)
+        {
+            currentPage++;
+            ShowMultiResult();
+        }
     }
-}
 
-public void PreviousPage()
-{
-    if (currentPage > 0)
+    public void PreviousPage()
     {
-        currentPage--;
-        ShowMultiResult();
+        if (currentPage > 0)
+        {
+            currentPage--;
+            ShowMultiResult();
+        }
     }
-}
     public void clearText()
     {
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
@@ -241,11 +253,13 @@ public void PreviousPage()
         {
             resultTextTMP[i].text = "";
         }
+        resultList.Clear();
+        resultList = new List<LoadData.PlayerData>();
         buttonText.text = "START";
     }
     public void SelectPlayer()
     {
-        if(playingPlayer == null)        
+        if (playingPlayer == null)
         {
             return;
         }
@@ -261,7 +275,7 @@ public void PreviousPage()
                 if (playingPlayer[i].isWon)
                 {
                     // remove from won list
-                    playingPlayer[i].isWon = false;                    
+                    playingPlayer[i].isWon = false;
                     wonPlayer[i].isWon = false;
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
                 }
@@ -274,7 +288,7 @@ public void PreviousPage()
                 }
             }
         }
-    }   
+    }
     void Update()
     {
 
