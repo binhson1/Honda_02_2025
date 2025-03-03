@@ -16,7 +16,6 @@ public class LoadData : MonoBehaviour
     public string dataPath = "";
     // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";
     public string wonPath = "";
-    public TextMeshProUGUI result;
 
     [System.Serializable]
     public class PlayerData
@@ -57,6 +56,16 @@ public class LoadData : MonoBehaviour
     private string CurrentSheetName;
     public List<PlayerData> WonPlayer = new List<PlayerData>();
     public List<Prize> prizes;
+
+    public string imagePath = "D:/Unity/Honda_02_2025/Assets/NumberImage/32.png";
+    public GameObject targetimage;
+    public void ChangeImage()
+    {
+        Sprite sprite = Resources.Load<Sprite>(imagePath);
+        Debug.Log(imagePath);
+        Debug.Log(sprite);
+        targetimage.GetComponent<Image>().sprite = sprite;
+    }
     void Start()
     {
         string folderName = "Data";

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.HSSF.UserModel;
@@ -16,7 +17,7 @@ class RollPrize : MonoBehaviour
     // create a list to store player data
     public List<LoadData.PlayerData> playingPlayer = new List<LoadData.PlayerData>();
 
-    public List<LoadData.PlayerData> wonPlayer = new List<LoadData.PlayerData>();
+    public List<LoadData.PlayerData> wonPlayer = new List<LoadData.PlayerData>(); // list này dùng để lưu người đã điểm danh rồi hoặc chưa điểm danh
 
     public List<LoadData.PlayerData> resultList = new List<LoadData.PlayerData>();
     public SelectPrize selectPrize;
@@ -27,6 +28,7 @@ class RollPrize : MonoBehaviour
     private bool isPlaying = false;
     private bool isStop = false;
     public List<TextMeshProUGUI> resultTextTMP;
+    public List<TextMeshProUGUI> bigResultTextTMP;
     // list of people that won 
     void Start()
     {
@@ -145,7 +147,14 @@ class RollPrize : MonoBehaviour
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
                     string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
-                    resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
+                    if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 10)
+                    {
+                        bigResultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
+                    }
+                    else
+                    {
+                        resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
+                    }
                     savePlayer.Add(wonPlayer[i]);
                     wonPlayer[i] = null;
                 }
@@ -155,13 +164,18 @@ class RollPrize : MonoBehaviour
                 allWon = false;
             }
         }
-        loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
+        // loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
         if (allWon)
         {
             for (int i = 0; i < players.Count; i++)
             {
                 playingPlayer[i].isWon = false;
-                players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
+                // players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
+                // change Image Sprite 
+                if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100)
+                {
+                    players[i].transform.Find("");
+                }
             }
             if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
             {
@@ -179,10 +193,13 @@ class RollPrize : MonoBehaviour
         isStop = false;
         loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
-        loadData.WritePrizeRemainQuantity();
+        // loadData.WritePrizeRemainQuantity();
     }
 
+    public void ShowHistoryResult()
+    {
 
+    }
 
     public void ShowMultiResult()
     {
@@ -253,6 +270,10 @@ class RollPrize : MonoBehaviour
         {
             resultTextTMP[i].text = "";
         }
+        for (int i = 0; i < bigResultTextTMP.Count; i++)
+        {
+            bigResultTextTMP[i].text = "";
+        }
         resultList.Clear();
         resultList = new List<LoadData.PlayerData>();
         buttonText.text = "START";
@@ -278,6 +299,8 @@ class RollPrize : MonoBehaviour
                     playingPlayer[i].isWon = false;
                     wonPlayer[i].isWon = false;
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
+                    // change color
+                    // Image image = players[i].transform.Find("Image").GetComponent<Image>();                                  
                 }
                 else
                 {
