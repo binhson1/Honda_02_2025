@@ -253,6 +253,11 @@ class RollPrize : MonoBehaviour
         {
             players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
             SpriteRenderer spriteRenderer = players[i].transform.Find("Anim").GetComponent<SpriteRenderer>();
+            if (players.Count == 10)
+            {
+                Image image = players[i].transform.Find("Image").GetComponent<Image>();
+                image.sprite = sprites[i];
+            }
 
             // Lấy màu hiện tại
             Color color = spriteRenderer.color;
