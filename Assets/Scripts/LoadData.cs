@@ -5,18 +5,11 @@ using SFB;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.HSSF.UserModel;
-using UnityEngine.UI;
-using System;
-using TMPro;
-using NPOI.SS.Formula.Functions;
 
 public class LoadData : MonoBehaviour
-{
-    // public Button selectFileButton;
+{    
     public string dataPath = "";
-    // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";
-    public string wonPath = "";
-
+    // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";    
     [System.Serializable]
     public class PlayerData
     {
@@ -25,7 +18,6 @@ public class LoadData : MonoBehaviour
         public string hovaten;
         public string phong;
         public string note;
-
         public bool isWon;
 
     }
@@ -53,9 +45,10 @@ public class LoadData : MonoBehaviour
             new Prize { Name = "Xe Máy Honda Lead", TotalQuantity = 3, RemainingQuantity = 3, BatchSize = 3 },
             new Prize { Name = "Giải đặc biệt", TotalQuantity = 4, RemainingQuantity = 4, BatchSize = 4 },
     };
-    private string CurrentSheetName;
-    public List<PlayerData> WonPlayer = new List<PlayerData>();
+    private string CurrentSheetName;    
     public List<Prize> prizes;
+    public List<PlayerData> playerDataList = new List<PlayerData>();
+    public List<PlayerData> wonPlayer = new List<PlayerData>();
     void Start()
     {
         string folderName = "Data";
@@ -66,8 +59,8 @@ public class LoadData : MonoBehaviour
             Directory.CreateDirectory(filePath);
         }
         dataPath = filePath + "/Data.xlsx";
-        dataPath = "D:\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
-        // dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+        // dataPath = "D:\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+        dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
         // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";
         // selectFileButton.onClick.AddListener(LoadExcel);
         LoadOrCreatePrizes(dataPath);
@@ -87,8 +80,6 @@ public class LoadData : MonoBehaviour
         prizes = Afternoonprizes;
         CurrentSheetName = "AfternoonPrizes";
     }
-    public List<PlayerData> playerDataList = new List<PlayerData>();
-    public List<PlayerData> wonPlayer = new List<PlayerData>();
     public void LoadExcel()
     {
         var extensions = new[] { new ExtensionFilter("Excel Files", "xlsx", "xls") };

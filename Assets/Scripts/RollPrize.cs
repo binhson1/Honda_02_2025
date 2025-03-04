@@ -25,7 +25,6 @@ class RollPrize : MonoBehaviour
     public TextMeshProUGUI buttonText;
     public TextMeshProUGUI currentPrizeLeft;
     public float fadeDuration = 5f; // Thời gian fade (giây)
-
     private bool isPlaying = false;
     private bool isStop = false;
     public List<TextMeshProUGUI> resultTextTMP;
@@ -69,8 +68,8 @@ class RollPrize : MonoBehaviour
                         string note = string.IsNullOrEmpty(loadData.playerDataList[random].note) ? " " : (" - " + loadData.playerDataList[random].note);
                         players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = loadData.playerDataList[random].manhanvien + " - " + loadData.playerDataList[random].hovaten + " - " + loadData.playerDataList[random].phong + note;
                         // change color
-                        Image imageColor = players[i].transform.Find("ImageBG").GetComponent<Image>();
-                        imageColor.color = new Color(255, 255, 255);
+                        // Image imageColor = players[i].transform.Find("ImageBG").GetComponent<Image>();
+                        // imageColor.color = new Color(255, 255, 255);
                         playingPlayer[i] = loadData.playerDataList[random];
                         playingPlayer[i].isWon = true;
                         wonPlayer[i] = playingPlayer[i];
@@ -195,7 +194,10 @@ class RollPrize : MonoBehaviour
 
     public void ShowHistoryResult()
     {
-
+        if(loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity == 0)
+        {
+            
+        }
     }
 
     public void ShowMultiResult()
