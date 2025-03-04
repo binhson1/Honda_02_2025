@@ -58,7 +58,7 @@ class RollPrize : MonoBehaviour
                     if (!playingPlayer[i].isWon)
                     {
                         int random = Random.Range(0, loadData.playerDataList.Count);
-                        while (loadData.wonPlayer.Contains(loadData.playerDataList[random]) || randomList.Contains(random))
+                        while (loadData.wonPlayer.Contains(loadData.playerDataList[random]) || randomList.Contains(random) || loadData.playerDataList[random].isWon == true)
                         {
                             random = Random.Range(0, loadData.playerDataList.Count);
                         }
@@ -147,6 +147,10 @@ class RollPrize : MonoBehaviour
             {
                 if (wonPlayer[i] != null)
                 {
+                    wonPlayer[i].isWon = false;
+                    loadData.playerDataList.Remove(wonPlayer[i]);
+                    wonPlayer[i].prizeName = loadData.prizes[selectPrize.currentPrizeIndex].Name;
+                    wonPlayer[i].isWon = true;
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
                     string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
@@ -167,11 +171,11 @@ class RollPrize : MonoBehaviour
                 allWon = false;
             }
         }
-        // loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
+        loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
         isStop = false;
         loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
         currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
-        // loadData.WritePrizeRemainQuantity();
+        loadData.WritePrizeRemainQuantity();
         if (allWon)
         {
             for (int i = 0; i < players.Count; i++)
@@ -194,9 +198,31 @@ class RollPrize : MonoBehaviour
 
     public void ShowHistoryResult()
     {
-        if(loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity == 0)
+        if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity == 0 && gameObject.name == loadData.prizes[selectPrize.currentPrizeIndex].BatchSize.ToString())
         {
-            
+            List<LoadData.PlayerData> showList = loadData.wonPlayer.Where(p => p.prizeName == loadData.prizes[selectPrize.currentPrizeIndex].Name).ToList();
+            if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity != 100)
+            {
+                for (int i = 0; i < showList.Count; i++)
+                {
+                    string note = string.IsNullOrEmpty(showList[i].note) ? " " : (" - " + showList[i].note);
+
+                    if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity != 10)
+                    {
+                        resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + showList[i].manhanvien + " - " + showList[i].hovaten + " - " + showList[i].phong + note;
+                    }
+                    else
+                    {
+                        bigResultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + showList[i].manhanvien + " - " + showList[i].hovaten + " - " + showList[i].phong + note;
+                    }
+                }
+            }
+            else
+            {
+                resultList = showList;
+                currentPage = 0;
+                ShowMultiResult();
+            }
         }
     }
 
@@ -254,13 +280,14 @@ class RollPrize : MonoBehaviour
         for (int i = 0; i < players.Count; i++)
         {
             players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
+            Image imagebg = players[i].transform.Find("ImageBG").GetComponent<Image>();
+            imagebg.color = new Color(255, 255, 255);
             SpriteRenderer spriteRenderer = players[i].transform.Find("Anim").GetComponent<SpriteRenderer>();
             if (players.Count == 10)
             {
                 Image image = players[i].transform.Find("Image").GetComponent<Image>();
                 image.sprite = sprites[i];
             }
-
             // Lấy màu hiện tại
             Color color = spriteRenderer.color;
 
