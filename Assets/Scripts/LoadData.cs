@@ -29,14 +29,13 @@ public class LoadData : MonoBehaviour
         public int RemainingQuantity;
         public int BatchSize; // Số lượng quay mỗi lần
     }
-
     public List<Prize> Morningprizes = new List<Prize>{
             new Prize { Name = "Vali", TotalQuantity = 100, RemainingQuantity = 100, BatchSize = 10 },
             new Prize { Name = "Nồi Chiên", TotalQuantity = 20, RemainingQuantity = 20, BatchSize = 10 },
             new Prize { Name = "Máy Giặt", TotalQuantity = 15, RemainingQuantity = 15, BatchSize = 15 },
             new Prize { Name = "Tủ Lạnh", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
             new Prize { Name = "Tivi", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
-
+            // new Prize { Name = "Giải thưởng bất ngờ", TotalQuantity = 200, RemainingQuantity = 200, BatchSize = 1}
     };
     public List<Prize> Afternoonprizes = new List<Prize>{
             new Prize { Name = "Máy Phát Điện Honda", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
@@ -45,6 +44,7 @@ public class LoadData : MonoBehaviour
             new Prize { Name = "Xe Máy Honda Vision", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
             new Prize { Name = "Xe Máy Honda Lead", TotalQuantity = 3, RemainingQuantity = 3, BatchSize = 3 },
             new Prize { Name = "Giải đặc biệt", TotalQuantity = 4, RemainingQuantity = 4, BatchSize = 4 },
+            new Prize { Name = "Giải thưởng bất ngờ", TotalQuantity = 200, RemainingQuantity = 200, BatchSize = 1}
     };
     private string CurrentSheetName;
     public SelectPrize selectPrize;

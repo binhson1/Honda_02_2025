@@ -75,7 +75,7 @@ class RollPrize : MonoBehaviour
                         wonPlayer[i] = playingPlayer[i];
                         randomList.Add(random);
                     }
-                    buttonText.text = "STOP";
+                    buttonText.text = "(STOP) Dừng Quay";
                 }
                 isPlaying = true;// là cho cái animations;
                 isStop = true;
@@ -94,7 +94,7 @@ class RollPrize : MonoBehaviour
             }
             isPlaying = false;
             // buttonText.text = "ROLL";
-            buttonText.text = "SAVE";
+            buttonText.text = "SAVE(Lưu Danh Sách)";
         }
     }
 
@@ -138,7 +138,7 @@ class RollPrize : MonoBehaviour
     }
     public void SavePlayer()
     {
-        buttonText.text = "START";
+        buttonText.text = "START(Bắt Đầu Quay)";
         bool allWon = true;
         List<LoadData.PlayerData> savePlayer = new List<LoadData.PlayerData>();
         for (int i = 0; i < players.Count; i++)
@@ -154,6 +154,8 @@ class RollPrize : MonoBehaviour
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
                     string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
+                    Image image = players[i].transform.Find("ImageBG").GetComponent<Image>();
+                    image.color = new Color(255, 255, 255);
                     if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 10)
                     {
                         bigResultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
@@ -173,9 +175,12 @@ class RollPrize : MonoBehaviour
         }
         loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
         isStop = false;
-        loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
-        currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
-        loadData.WritePrizeRemainQuantity();
+        if (loadData.prizes[selectPrize.currentPrizeIndex].Name != "Giải thưởng bất ngờ")
+        {
+            loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity -= savePlayer.Count;
+            currentPrizeLeft.text = "Còn lại : " + loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString() + " lượt";
+            loadData.WritePrizeRemainQuantity();
+        }
         if (allWon)
         {
             for (int i = 0; i < players.Count; i++)
@@ -276,7 +281,8 @@ class RollPrize : MonoBehaviour
     }
     public void clearText()
     {
-        currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
+        // currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
+        currentPrizeLeft.text = "Còn lại : " + loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString() + " lượt";
         for (int i = 0; i < players.Count; i++)
         {
             players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
@@ -307,7 +313,7 @@ class RollPrize : MonoBehaviour
         }
         resultList.Clear();
         resultList = new List<LoadData.PlayerData>();
-        buttonText.text = "START";
+        buttonText.text = "START(Bắt Đầu Quay)";
     }
     public void SelectPlayer()
     {

@@ -54,12 +54,12 @@ public class SelectPrize : MonoBehaviour
                 backGround[i].SetActive(false);
             }
         }
-        bool isVali = false; 
-        if(loadData.prizes[0].TotalQuantity == 100)
+        bool isVali = false;
+        if (loadData.prizes[0].TotalQuantity == 100)
         {
             isVali = true;
         }
-        for(int i = 0; i < changePage.Count; i++)
+        for (int i = 0; i < changePage.Count; i++)
         {
             changePage[i].SetActive(isVali);
         }
@@ -94,15 +94,20 @@ public class SelectPrize : MonoBehaviour
                 backGround[i].SetActive(false);
             }
         }
-        bool isVali = false; 
-        if(loadData.prizes[prizeIndex].TotalQuantity == 100)
+        bool isVali = false;
+        if (loadData.prizes[prizeIndex].TotalQuantity == 100)
         {
             isVali = true;
         }
-        for(int i = 0; i < changePage.Count; i++)
+        for (int i = 0; i < changePage.Count; i++)
         {
             changePage[i].SetActive(isVali);
         }
+    }
+
+    public void SelectLast()
+    {
+        dropdownlistprize.value = dropdownlistprize.options.Count - 1;
     }
 
     // Update is called once per frame
