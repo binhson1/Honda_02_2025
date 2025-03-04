@@ -1,14 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
+using OfficeOpenXml;
 using UnityEngine;
 
 public class LoadData : MonoBehaviour
 {
     public string dataPath = "";
-    // public string prizePath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Prize.xlsx";    
+
     [System.Serializable]
     public class PlayerData
     {
@@ -19,7 +17,6 @@ public class LoadData : MonoBehaviour
         public string note;
         public bool isWon;
         public string prizeName;
-
     }
 
     public class Prize
@@ -27,212 +24,172 @@ public class LoadData : MonoBehaviour
         public string Name;
         public int TotalQuantity;
         public int RemainingQuantity;
-        public int BatchSize; // Số lượng quay mỗi lần
+        public int BatchSize;
     }
-    public List<Prize> Morningprizes = new List<Prize>{
-            new Prize { Name = "Vali", TotalQuantity = 100, RemainingQuantity = 100, BatchSize = 10 },
-            new Prize { Name = "Nồi Chiên", TotalQuantity = 20, RemainingQuantity = 20, BatchSize = 10 },
-            new Prize { Name = "Máy Giặt", TotalQuantity = 15, RemainingQuantity = 15, BatchSize = 15 },
-            new Prize { Name = "Tủ Lạnh", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
-            new Prize { Name = "Tivi", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
-            // new Prize { Name = "Giải thưởng bất ngờ", TotalQuantity = 200, RemainingQuantity = 200, BatchSize = 1}
+
+    public List<Prize> Morningprizes = new List<Prize>
+    {
+        new Prize { Name = "Vali", TotalQuantity = 100, RemainingQuantity = 100, BatchSize = 10 },
+        new Prize { Name = "Nồi Chiên", TotalQuantity = 20, RemainingQuantity = 20, BatchSize = 10 },
+        new Prize { Name = "Máy Giặt", TotalQuantity = 15, RemainingQuantity = 15, BatchSize = 15 },
+        new Prize { Name = "Tủ Lạnh", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
+        new Prize { Name = "Tivi", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 }
     };
-    public List<Prize> Afternoonprizes = new List<Prize>{
-            new Prize { Name = "Máy Phát Điện Honda", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
-            new Prize { Name = "Xe Máy Honda Wave Alpha", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
-            new Prize { Name = "Xe Máy Honda Blade", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
-            new Prize { Name = "Xe Máy Honda Vision", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
-            new Prize { Name = "Xe Máy Honda Lead", TotalQuantity = 3, RemainingQuantity = 3, BatchSize = 3 },
-            new Prize { Name = "Giải đặc biệt", TotalQuantity = 4, RemainingQuantity = 4, BatchSize = 4 },
-            new Prize { Name = "Giải thưởng bất ngờ", TotalQuantity = 200, RemainingQuantity = 200, BatchSize = 1}
+
+    public List<Prize> Afternoonprizes = new List<Prize>
+    {
+        new Prize { Name = "Máy Phát Điện Honda", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
+        new Prize { Name = "Xe Máy Honda Wave Alpha", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
+        new Prize { Name = "Xe Máy Honda Blade", TotalQuantity = 10, RemainingQuantity = 10, BatchSize = 10 },
+        new Prize { Name = "Xe Máy Honda Vision", TotalQuantity = 5, RemainingQuantity = 5, BatchSize = 5 },
+        new Prize { Name = "Xe Máy Honda Lead", TotalQuantity = 3, RemainingQuantity = 3, BatchSize = 3 },
+        new Prize { Name = "Giải đặc biệt", TotalQuantity = 4, RemainingQuantity = 4, BatchSize = 4 },
+        new Prize { Name = "Giải thưởng bất ngờ", TotalQuantity = 1, RemainingQuantity = 1, BatchSize = 1 }
     };
+
     private string CurrentSheetName;
-    public SelectPrize selectPrize;
     public List<Prize> prizes;
+    public SelectPrize selectPrize;
     public List<PlayerData> playerDataList = new List<PlayerData>();
     public List<PlayerData> wonPlayer = new List<PlayerData>();
 
-    // Start is called before the first frame update
     void Start()
     {
-        string filePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Data");
-        if (!Directory.Exists(filePath))
-        {
-            Directory.CreateDirectory(filePath);
-        }
-        dataPath = filePath + "/Data.xlsx";
-        dataPath = "D:\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
-        // dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
-
+        dataPath = Path.Combine(Application.dataPath, "Data.xlsx");
+        dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
         LoadOrCreatePrizes(dataPath);
         ReadPlayerData(dataPath);
         prizes = Morningprizes;
         CurrentSheetName = "MorningPrizes";
     }
+
     public void SwitchToMorning()
     {
         prizes = Morningprizes;
         CurrentSheetName = "MorningPrizes";
     }
+
     public void WritePrizeRemainQuantity()
     {
-        using (FileStream stream = new FileStream(dataPath, FileMode.Open, FileAccess.ReadWrite))
+        using (ExcelPackage package = new ExcelPackage(new FileInfo(dataPath)))
         {
-            IWorkbook workbook = new XSSFWorkbook(stream);
-            ISheet sheet = workbook.GetSheet(CurrentSheetName);
+            ExcelWorksheet sheet = package.Workbook.Worksheets[CurrentSheetName];
             if (sheet != null)
             {
-                IRow row = sheet.GetRow(selectPrize.currentPrizeIndex + 1);
-                if (row != null)
+                sheet.Cells[selectPrize.currentPrizeIndex + 2, 3].Value = prizes[selectPrize.currentPrizeIndex].RemainingQuantity;
+                // package.Save();
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    row.GetCell(2).SetCellValue(prizes[selectPrize.currentPrizeIndex].RemainingQuantity);
+                    package.SaveAs(memoryStream);
+                    File.WriteAllBytes(dataPath, memoryStream.ToArray());
                 }
-            }
-            using (FileStream writeStream = new FileStream(dataPath, FileMode.Create, FileAccess.Write))
-            {
-                workbook.Write(writeStream);
             }
         }
     }
+
     public void SaveExcel(List<PlayerData> wonPlayer, string prizeName)
     {
         if (File.Exists(dataPath))
         {
-            IWorkbook workbook = OpenAndReadWorkbook(dataPath);
-            ISheet sheet = workbook.GetSheet("Data");
-            if (sheet != null)
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(dataPath)))
             {
-                for (int i = 0; i < wonPlayer.Count; i++)
+                ExcelWorksheet sheet = package.Workbook.Worksheets["Data"];
+                if (sheet != null)
                 {
-                    IRow row = sheet.GetRow(wonPlayer[i].id + 1);
-                    if (row != null)
+                    foreach (var player in wonPlayer)
                     {
-                        row.CreateCell(5).SetCellValue(prizeName);
+                        int rowIndex = player.id + 2; // Giả sử dòng đầu tiên là header
+                        sheet.Cells[rowIndex, 6].Value = prizeName;
                     }
                 }
-            }
-            using (FileStream writeStream = new FileStream(dataPath, FileMode.Create, FileAccess.Write))
-            {
-                workbook.Write(writeStream);
+
+                // Sử dụng MemoryStream để giảm thời gian thao tác file
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    package.SaveAs(memoryStream); // Lưu vào RAM trước
+                    File.WriteAllBytes(dataPath, memoryStream.ToArray()); // Sau đó ghi 1 lần vào file
+                }
             }
         }
     }
+
     public void SwitchToAfternoon()
     {
         prizes = Afternoonprizes;
         CurrentSheetName = "AfternoonPrizes";
     }
-    private IWorkbook OpenAndReadWorkbook(string path)
-    {
-        using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
-        {
-            return new XSSFWorkbook(fs);
-        }
-    }
+
     private void LoadOrCreatePrizes(string path)
     {
-        if (File.Exists(path))
+        FileInfo fileInfo = new FileInfo(path);
+        using (ExcelPackage package = new ExcelPackage(fileInfo))
         {
-            IWorkbook workbook = OpenAndReadWorkbook(path);
-            WriteOrRead(workbook, "MorningPrizes", Morningprizes);
-            WriteOrRead(workbook, "Afternoonprizes", Afternoonprizes);
-            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                workbook.Write(fs);
-            }
+            WriteOrRead(package, "MorningPrizes", Morningprizes);
+            WriteOrRead(package, "AfternoonPrizes", Afternoonprizes);
+            package.Save();
         }
     }
-    private void WriteOrRead(IWorkbook workbook, string sheetName, List<Prize> prizeList)
+
+    private void WriteOrRead(ExcelPackage package, string sheetName, List<Prize> prizeList)
     {
-        ISheet sheet = workbook.GetSheet(sheetName);
-        if (sheet != null)
+        ExcelWorksheet sheet = package.Workbook.Worksheets[sheetName] ?? package.Workbook.Worksheets.Add(sheetName);
+        
+        if (sheet.Dimension != null)
         {
             prizeList.Clear();
-            for (int i = 1; i <= sheet.LastRowNum; i++)
+            for (int i = 2; i <= sheet.Dimension.Rows; i++)
             {
-                IRow row = sheet.GetRow(i);
-                if (row != null)
+                prizeList.Add(new Prize
                 {
-                    Prize prize = new Prize
-                    {
-                        Name = row.GetCell(0).StringCellValue,
-                        TotalQuantity = (int)row.GetCell(1).NumericCellValue,
-                        RemainingQuantity = (int)row.GetCell(2).NumericCellValue,
-                        BatchSize = (int)row.GetCell(3).NumericCellValue
-                    };
-                    prizeList.Add(prize);
-                }
+                    Name = sheet.Cells[i, 1].Text,
+                    TotalQuantity = int.Parse(sheet.Cells[i, 2].Text),
+                    RemainingQuantity = int.Parse(sheet.Cells[i, 3].Text),
+                    BatchSize = int.Parse(sheet.Cells[i, 4].Text)
+                });
             }
         }
         else
         {
-            sheet = workbook.CreateSheet(sheetName);
-            IRow headerRow = sheet.CreateRow(0);
-            headerRow.CreateCell(0).SetCellValue("Name");
-            headerRow.CreateCell(1).SetCellValue("TotalQuantity");
-            headerRow.CreateCell(2).SetCellValue("RemainingQuantity");
-            headerRow.CreateCell(3).SetCellValue("BatchSize");
-
+            sheet.Cells[1, 1].Value = "Name";
+            sheet.Cells[1, 2].Value = "TotalQuantity";
+            sheet.Cells[1, 3].Value = "RemainingQuantity";
+            sheet.Cells[1, 4].Value = "BatchSize";
             for (int i = 0; i < prizeList.Count; i++)
             {
-                IRow row = sheet.GetRow(i + 1) ?? sheet.CreateRow(i + 1);
-                row.CreateCell(0).SetCellValue(prizeList[i].Name);
-                row.CreateCell(1).SetCellValue(prizeList[i].TotalQuantity);
-                row.CreateCell(2).SetCellValue(prizeList[i].RemainingQuantity);
-                row.CreateCell(3).SetCellValue(prizeList[i].BatchSize);
+                sheet.Cells[i + 2, 1].Value = prizeList[i].Name;
+                sheet.Cells[i + 2, 2].Value = prizeList[i].TotalQuantity;
+                sheet.Cells[i + 2, 3].Value = prizeList[i].RemainingQuantity;
+                sheet.Cells[i + 2, 4].Value = prizeList[i].BatchSize;
             }
         }
     }
 
     private void ReadPlayerData(string path)
     {
-        if (File.Exists(path))
+        using (ExcelPackage package = new ExcelPackage(new FileInfo(path)))
         {
-            IWorkbook workbook = OpenAndReadWorkbook(path);
-            ISheet sheet = workbook.GetSheet("Data");
+            ExcelWorksheet sheet = package.Workbook.Worksheets["Data"];
             if (sheet != null)
             {
-                for (int i = 2; i <= sheet.LastRowNum; i++)
+                for (int i = 3; i <= sheet.Dimension.Rows; i++)
                 {
-                    IRow row = sheet.GetRow(i);
-                    PlayerData data;
-                    if (row == null) continue;
-
-                    string cell5 = row?.GetCell(5)?.ToString() ?? "";
-                    if (cell5 == "")
+                    string prize = sheet.Cells[i, 6].Text;
+                    PlayerData data = new PlayerData
                     {
-                        data = new PlayerData
-                        {
-                            id = int.Parse(row.GetCell(0).ToString()),
-                            manhanvien = row.GetCell(1).ToString(),
-                            hovaten = row.GetCell(2).ToString(),
-                            phong = row.GetCell(3).ToString(),
-                            note = row.GetCell(4).ToString() ?? string.Empty,
-                            isWon = false,
-                            prizeName = row?.GetCell(5)?.ToString() ?? "",
-                        };
-                        playerDataList.Add(data);
-                    }
-                    else
-                    {
-                        data = new PlayerData
-                        {
-                            id = int.Parse(row.GetCell(0).ToString()),
-                            manhanvien = row.GetCell(1).ToString(),
-                            hovaten = row.GetCell(2).ToString(),
-                            phong = row.GetCell(3).ToString(),
-                            note = row.GetCell(4).ToString() ?? string.Empty,
-                            isWon = true,
-                            prizeName = row?.GetCell(5)?.ToString() ?? "",
-                        };
+                        id = int.Parse(sheet.Cells[i, 1].Text),
+                        manhanvien = sheet.Cells[i, 2].Text,
+                        hovaten = sheet.Cells[i, 3].Text,
+                        phong = sheet.Cells[i, 4].Text,
+                        note = sheet.Cells[i, 5].Text,
+                        isWon = !string.IsNullOrEmpty(prize),
+                        prizeName = prize
+                    };
+                    if (data.isWon)
                         wonPlayer.Add(data);
-                    }
+                    else
+                        playerDataList.Add(data);
                 }
-                Debug.Log($"Đã tải {playerDataList.Count} dòng dữ liệu.");
             }
         }
-    }
-    void Update()
-    {
     }
 }

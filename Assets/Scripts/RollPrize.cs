@@ -94,7 +94,7 @@ class RollPrize : MonoBehaviour
             }
             isPlaying = false;
             // buttonText.text = "ROLL";
-            buttonText.text = "SAVE(Lưu Danh Sách)";
+            buttonText.text = "SAVE (Lưu Danh Sách)";
         }
     }
 
@@ -313,7 +313,7 @@ class RollPrize : MonoBehaviour
         }
         resultList.Clear();
         resultList = new List<LoadData.PlayerData>();
-        buttonText.text = "START(Bắt Đầu Quay)";
+        buttonText.text = "START (Bắt Đầu Quay)";
     }
     public void SelectPlayer()
     {
