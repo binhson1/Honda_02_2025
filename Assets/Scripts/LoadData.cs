@@ -55,8 +55,9 @@ public class LoadData : MonoBehaviour
 
     void Start()
     {
-        dataPath = Path.Combine(Application.dataPath, "Data.xlsx");
-        dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
+        string filePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Data");
+        dataPath = filePath + "/Data.xlsx";
+        // dataPath = "D:\\STUDYING\\Unity\\Honda_02_2025\\Assets\\ExcelTest\\Data.xlsx";
         LoadOrCreatePrizes(dataPath);
         ReadPlayerData(dataPath);
         prizes = Morningprizes;
@@ -133,7 +134,7 @@ public class LoadData : MonoBehaviour
     private void WriteOrRead(ExcelPackage package, string sheetName, List<Prize> prizeList)
     {
         ExcelWorksheet sheet = package.Workbook.Worksheets[sheetName] ?? package.Workbook.Worksheets.Add(sheetName);
-        
+
         if (sheet.Dimension != null)
         {
             prizeList.Clear();

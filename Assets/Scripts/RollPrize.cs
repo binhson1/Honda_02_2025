@@ -75,7 +75,7 @@ class RollPrize : MonoBehaviour
                         wonPlayer[i] = playingPlayer[i];
                         randomList.Add(random);
                     }
-                    buttonText.text = "(STOP) Dừng Quay";
+                    buttonText.text = "STOP (Dừng Quay)";
                 }
                 isPlaying = true;// là cho cái animations;
                 isStop = true;
@@ -138,7 +138,7 @@ class RollPrize : MonoBehaviour
     }
     public void SavePlayer()
     {
-        buttonText.text = "START(Bắt Đầu Quay)";
+        buttonText.text = "START (Bắt Đầu Quay)";
         bool allWon = true;
         List<LoadData.PlayerData> savePlayer = new List<LoadData.PlayerData>();
         for (int i = 0; i < players.Count; i++)
@@ -181,13 +181,17 @@ class RollPrize : MonoBehaviour
             currentPrizeLeft.text = "Còn lại : " + loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString() + " lượt";
             loadData.WritePrizeRemainQuantity();
         }
+        else
+        {
+            currentPrizeLeft.text = resultList.Count().ToString();
+        }
         if (allWon)
         {
             for (int i = 0; i < players.Count; i++)
             {
                 playingPlayer[i].isWon = false;
                 // change Image Sprite 
-                if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity > 0 && loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100)
+                if (loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity > 0 && loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity >= 20)
                 {
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
                     Image image = players[i].transform.Find("Image").GetComponent<Image>();
@@ -197,6 +201,14 @@ class RollPrize : MonoBehaviour
             if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 100 || loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 20)
             {
                 ShowMultiResult();
+            }
+            if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 1)
+            {
+                for (int i = 0; i < resultList.Count; i++)
+                {
+                    string note = string.IsNullOrEmpty(resultList[i].note) ? " " : (" - " + resultList[i].note);
+                    resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + resultList[i].manhanvien + " - " + resultList[i].hovaten + " - " + resultList[i].phong + note;
+                }
             }
         }
     }
@@ -282,7 +294,14 @@ class RollPrize : MonoBehaviour
     public void clearText()
     {
         // currentPrizeLeft.text = loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString();
-        currentPrizeLeft.text = "Còn lại : " + loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString() + " lượt";
+        if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 1)
+        {
+            currentPrizeLeft.text = resultList.Count.ToString();
+        }
+        else
+        {
+            currentPrizeLeft.text = "Còn lại : " + loadData.prizes[selectPrize.currentPrizeIndex].RemainingQuantity.ToString() + " lượt";
+        }
         for (int i = 0; i < players.Count; i++)
         {
             players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
