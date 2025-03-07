@@ -29,6 +29,8 @@ class RollPrize : MonoBehaviour
     private bool isStop = false;
     public List<TextMeshProUGUI> resultTextTMP;
     public List<TextMeshProUGUI> bigResultTextTMP;
+    public Sprite redSprite;
+    public Sprite greenSprite;
     // list of people that won 
     void Start()
     {
@@ -153,17 +155,18 @@ class RollPrize : MonoBehaviour
                     wonPlayer[i].isWon = true;
                     loadData.wonPlayer.Add(wonPlayer[i]);
                     resultList.Add(wonPlayer[i]);
-                    string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
+                    // string note = string.IsNullOrEmpty(wonPlayer[i].note) ? " " : (" - " + wonPlayer[i].note);
                     Image image = players[i].transform.Find("ImageBG").GetComponent<Image>();
-                    image.color = new Color(255, 255, 255);
-                    if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 10)
-                    {
-                        bigResultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
-                    }
-                    else
-                    {
-                        resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
-                    }
+                    image.sprite = redSprite;
+                    // image.color = new Color(255, 255, 255);
+                    // if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 10)
+                    // {
+                    //     bigResultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
+                    // }
+                    // else
+                    // {
+                    //     resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + wonPlayer[i].manhanvien + " - " + wonPlayer[i].hovaten + " - " + wonPlayer[i].phong + note;
+                    // }
                     savePlayer.Add(wonPlayer[i]);
                     wonPlayer[i] = null;
                 }
@@ -171,6 +174,21 @@ class RollPrize : MonoBehaviour
             else
             {
                 allWon = false;
+            }
+        }
+        if (!allWon)
+        {
+            for (int i = 0; i < resultList.Count; i++)
+            {
+                string note = string.IsNullOrEmpty(resultList[i].note) ? " " : (" - " + resultList[i].note);
+                if (loadData.prizes[selectPrize.currentPrizeIndex].TotalQuantity == 10)
+                {
+                    bigResultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + resultList[i].manhanvien + " - " + resultList[i].hovaten + " - " + resultList[i].phong + note;
+                }
+                else
+                {
+                    resultTextTMP[i].text = "(" + (i + 1) + ")" + " - " + resultList[i].manhanvien + " - " + resultList[i].hovaten + " - " + resultList[i].phong + note;
+                }
             }
         }
         loadData.SaveExcel(savePlayer, loadData.prizes[selectPrize.currentPrizeIndex].Name);
@@ -306,7 +324,8 @@ class RollPrize : MonoBehaviour
         {
             players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
             Image imagebg = players[i].transform.Find("ImageBG").GetComponent<Image>();
-            imagebg.color = new Color(255, 255, 255);
+            imagebg.sprite = redSprite;
+            // imagebg.color = new Color(255, 255, 255);
             SpriteRenderer spriteRenderer = players[i].transform.Find("Anim").GetComponent<SpriteRenderer>();
             if (players.Count == 10)
             {
@@ -357,7 +376,8 @@ class RollPrize : MonoBehaviour
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = "";
                     // change color
                     Image image = players[i].transform.Find("ImageBG").GetComponent<Image>();
-                    image.color = new Color(0, 255, 255);
+                    image.sprite = greenSprite;
+                    // image.color = new Color(0, 255, 255);
                 }
                 else
                 {
@@ -367,7 +387,8 @@ class RollPrize : MonoBehaviour
                     players[i].transform.Find("Text (TMP)").GetComponent<TMPro.TextMeshProUGUI>().text = playingPlayer[i].manhanvien + " - " + playingPlayer[i].hovaten + " - " + playingPlayer[i].phong + " - " + playingPlayer[i].note;
                     // change color
                     Image image = players[i].transform.Find("ImageBG").GetComponent<Image>();
-                    image.color = new Color(255, 255, 255);
+                    image.sprite = redSprite;
+                    // image.color = new Color(255, 255, 255);
                 }
             }
         }
